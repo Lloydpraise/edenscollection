@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edens Collection — Rare Timepieces</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Tenor+Sans&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --deep: #111111;
+    --dark: #1a1a1a;
+    --gold: #b8975a;
+    --gold-light: #d4af7a;
+    --gold-dim: #8a6e3e;
+    --white: #f5f2ee;
+    --grey: #888580;
+    --light-grey: #c8c4be;
+    --red: #c0392b;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--white); color: var(--black); font-family: 'Montserrat', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px; height: 70px;
+    background: rgba(10,10,10,0.92); backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(184,151,90,0.15); transition: background 0.3s;
+  }
+  .nav-links { display: flex; gap: 36px; list-style: none; }
+  .nav-links a {
+    font-size: 11px; font-weight: 400; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--light-grey); text-decoration: none; transition: color 0.25s; position: relative;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+    height: 1px; background: var(--gold); transform: scaleX(0); transition: transform 0.25s;
+  }
+  .nav-links a:hover { color: var(--white); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 300;
+    letter-spacing: 0.22em; color: var(--white); text-decoration: none; text-transform: uppercase;
+    position: absolute; left: 50%; transform: translateX(-50%);
+  }
+  .nav-logo span { color: var(--gold); }
+  .nav-actions { display: flex; align-items: center; gap: 6px; }
+  .nav-icon-btn {
+    position: relative; width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    background: transparent; border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer; color: var(--light-grey); transition: border-color 0.2s, color 0.2s;
+  }
+  .nav-icon-btn:hover { border-color: var(--gold); color: var(--gold); }
+  .nav-icon-btn svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-badge {
+    position: absolute; top: 5px; right: 5px; width: 16px; height: 16px;
+    background: var(--gold); border-radius: 50%; font-size: 8px; font-weight: 700;
+    color: var(--black); display: flex; align-items: center; justify-content: center;
+  }
+  .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+  .nav-hamburger span { display: block; width: 22px; height: 1.5px; background: var(--light-grey); transition: all 0.3s; }
+  .mobile-menu {
+    display: none; position: fixed; top: 70px; left: 0; right: 0;
+    background: rgba(10,10,10,0.98); backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(184,151,90,0.2);
+    padding: 16px 28px 28px; z-index: 99; flex-direction: column;
+  }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a {
+    font-size: 12px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--light-grey); text-decoration: none;
+    padding: 16px 0; border-bottom: 1px solid rgba(255,255,255,0.06); transition: color 0.2s;
+  }
+  .mobile-menu a:hover { color: var(--gold); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--black); color: var(--white); padding: 14px 28px;
+    font-size: 11px; letter-spacing: 0.12em; z-index: 999;
+    opacity: 0; transition: opacity 0.3s, transform 0.3s; pointer-events: none;
+    border-left: 3px solid var(--gold);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ── HERO ── */
+  .hero { position: relative; height: 100vh; min-height: 600px; display: flex; align-items: center; overflow: hidden; background: var(--black); }
+  .hero-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1600&q=80');
+    background-size: cover; background-position: center 30%;
+    filter: brightness(0.32) saturate(0.6);
+    transform: scale(1.05);
+    animation: heroZoom 18s ease-in-out infinite alternate;
+  }
+  @keyframes heroZoom { from { transform: scale(1.05); } to { transform: scale(1.12); } }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(105deg, rgba(0,0,0,0.85) 35%, rgba(0,0,0,0.2) 100%); }
+  .hero-content {
+    position: relative; z-index: 2; padding: 0 80px; max-width: 720px;
+    opacity: 0; animation: fadeUp 1.2s 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+  .hero-eyebrow {
+    font-size: 10px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold);
+    margin-bottom: 24px; display: flex; align-items: center; gap: 14px;
+  }
+  .hero-eyebrow::before { content: ''; display: block; width: 40px; height: 1px; background: var(--gold); }
+  .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(42px, 6vw, 86px); font-weight: 300; line-height: 1.05; color: var(--white); margin-bottom: 28px; }
+  .hero h1 em { font-style: italic; color: var(--gold-light); }
+  .hero-sub { font-size: 13px; letter-spacing: 0.06em; color: var(--light-grey); line-height: 1.8; margin-bottom: 48px; max-width: 440px; }
+  .btn-primary {
+    display: inline-block; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--black); background: var(--gold); padding: 16px 40px; text-decoration: none;
+    transition: background 0.25s, transform 0.2s; font-weight: 500;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+  .btn-outline {
+    display: inline-block; font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--white); background: transparent; border: 1px solid rgba(255,255,255,0.4);
+    padding: 16px 40px; text-decoration: none; margin-left: 16px; transition: border-color 0.25s, color 0.25s;
+  }
+  .btn-outline:hover { border-color: var(--gold); color: var(--gold); }
+  .hero-scroll {
+    position: absolute; bottom: 40px; left: 80px; z-index: 2;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--grey);
+  }
+  .hero-scroll-line { width: 48px; height: 1px; background: var(--gold-dim); position: relative; overflow: hidden; }
+  .hero-scroll-line::after {
+    content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+    background: var(--gold); animation: scrollLine 2s 1.5s ease infinite;
+  }
+  @keyframes scrollLine { 0% { left: -100%; } 100% { left: 100%; } }
+
+  /* ── TRUST BAR ── */
+  .trust-bar {
+    background: var(--deep); padding: 36px 80px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid rgba(184,151,90,0.2);
+  }
+  .trust-item { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; position: relative; }
+  .trust-item:not(:last-child)::after {
+    content: ''; position: absolute; right: 0; top: 10%; bottom: 10%;
+    width: 1px; background: rgba(255,255,255,0.1);
+  }
+  .trust-label { font-family: 'Tenor Sans', sans-serif; font-size: 13px; letter-spacing: 0.12em; color: var(--white); text-transform: uppercase; }
+  .trust-sub { font-size: 10px; letter-spacing: 0.08em; color: var(--grey); }
+
+  /* ── SECTION TITLES ── */
+  .section-title { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 3.5vw, 48px); font-weight: 300; letter-spacing: 0.04em; color: var(--black); }
+  .gold-rule { width: 50px; height: 1px; background: var(--gold); margin: 20px 0; }
+  .gold-rule.center { margin: 20px auto; }
+
+  /* ── PRODUCTS ── */
+  .products-section { padding: 100px 80px; background: var(--white); }
+  .products-header { display: flex; align-items: baseline; margin-bottom: 60px; }
+  .tab-btn {
+    font-family: 'Tenor Sans', sans-serif; font-size: 22px; letter-spacing: 0.06em;
+    color: var(--grey); background: none; border: none; cursor: pointer;
+    padding: 0 30px 12px; position: relative; transition: color 0.25s;
+  }
+  .tab-btn:first-child { padding-left: 0; }
+  .tab-btn::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--black); transform: scaleX(0); transition: transform 0.25s; }
+  .tab-btn.active { color: var(--black); }
+  .tab-btn.active::after { transform: scaleX(1); }
+  .tab-btn:hover { color: var(--black); }
+  .products-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+  .product-card { cursor: default; }
+  .product-img-wrap {
+    background: #f0ece6; aspect-ratio: 1;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden; position: relative; margin-bottom: 18px;
+  }
+  .product-img-wrap img { width: 80%; height: 80%; object-fit: contain; }
+  .product-badge {
+    position: absolute; top: 14px; left: 14px;
+    font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+    background: var(--gold); color: var(--black); padding: 4px 10px; font-weight: 500;
+  }
+  .product-badge.sale { background: var(--red); color: var(--white); }
+  .product-wishlist-btn {
+    position: absolute; top: 14px; right: 14px;
+    width: 34px; height: 34px; background: rgba(255,255,255,0.9); border: none;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.2s; font-size: 15px; color: var(--grey);
+  }
+  .product-card:hover .product-wishlist-btn { opacity: 1; }
+  .product-wishlist-btn:hover { color: var(--red); }
+  .product-brand { font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold-dim); margin-bottom: 6px; }
+  .product-name { font-family: 'Tenor Sans', sans-serif; font-size: 13px; letter-spacing: 0.04em; color: var(--black); margin-bottom: 4px; line-height: 1.4; }
+  .product-desc { font-size: 10px; color: var(--grey); line-height: 1.6; margin-bottom: 10px; letter-spacing: 0.03em; }
+  .product-price { font-size: 14px; font-weight: 500; color: var(--black); letter-spacing: 0.04em; margin-bottom: 14px; }
+  .product-price .old { color: var(--grey); text-decoration: line-through; font-weight: 300; margin-left: 8px; font-size: 12px; }
+  .product-price .sale-price { color: var(--red); }
+  .product-actions { display: flex; gap: 8px; }
+  .btn-cart {
+    flex: 1; padding: 11px 0;
+    font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 600;
+    background: var(--black); color: var(--white); border: 1px solid var(--black);
+    cursor: pointer; transition: background 0.22s, color 0.22s, border-color 0.22s;
+  }
+  .btn-cart:hover { background: var(--gold); color: var(--black); border-color: var(--gold); }
+  .btn-buy {
+    flex: 1; padding: 11px 0;
+    font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 0.18em;
+    text-transform: uppercase; font-weight: 600;
+    background: transparent; color: var(--black); border: 1px solid var(--black);
+    cursor: pointer; transition: background 0.22s, color 0.22s;
+  }
+  .btn-buy:hover { background: var(--black); color: var(--white); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── FEATURED ── */
+  .featured { display: grid; grid-template-columns: 55% 45%; min-height: 560px; background: var(--black); }
+  .featured-img { position: relative; overflow: hidden; }
+  .featured-img img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.75) saturate(0.7); }
+  .featured-img-overlay { position: absolute; inset: 0; background: linear-gradient(to right, transparent 60%, var(--black)); }
+  .featured-content { display: flex; flex-direction: column; justify-content: center; padding: 80px 72px 80px 56px; }
+  .featured-eyebrow { font-size: 9px; letter-spacing: 0.35em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+  .featured-eyebrow::before { content: ''; display: block; width: 30px; height: 1px; background: var(--gold); }
+  .featured-content h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(30px, 2.8vw, 50px); font-weight: 300; color: var(--white); line-height: 1.15; margin-bottom: 28px; }
+  .featured-content p { font-size: 12px; color: rgba(200,196,190,0.8); line-height: 2; letter-spacing: 0.05em; max-width: 380px; margin-bottom: 48px; }
+
+  /* ── BRANDS ── */
+  .brands-section { padding: 90px 80px; background: var(--white); text-align: center; }
+  .brands-section .section-title { margin-bottom: 16px; }
+  .brands-grid { display: flex; align-items: center; justify-content: center; gap: 52px; flex-wrap: wrap; margin-top: 40px; }
+  .brand-item { font-family: 'Tenor Sans', sans-serif; font-size: 17px; letter-spacing: 0.18em; text-transform: uppercase; color: #444; transition: color 0.25s, transform 0.25s; cursor: default; }
+  .brand-item:hover { color: var(--black); transform: scale(1.06); }
+  .brand-item.special { font-family: 'Cormorant Garamond', serif; font-size: 21px; font-style: italic; color: #333; }
+  .brand-item.special:hover { color: var(--black); }
+
+  /* ── TESTIMONIALS ── */
+  .testimonials-section { padding: 100px 80px; background: #f7f4f0; }
+  .testimonials-header { text-align: center; margin-bottom: 64px; }
+  .testimonials-header p { font-size: 12px; color: var(--grey); letter-spacing: 0.08em; margin-top: 8px; }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+  .testimonial-card { background: var(--white); overflow: hidden; position: relative; }
+  .testimonial-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; filter: saturate(0.7); transition: filter 0.4s; display: block; }
+  .testimonial-card:hover .testimonial-img { filter: saturate(1); }
+  .testimonial-body { padding: 28px; }
+  .testimonial-name { font-family: 'Tenor Sans', sans-serif; font-size: 14px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--black); margin-bottom: 10px; }
+  .testimonial-text { font-size: 11px; color: var(--grey); line-height: 1.9; letter-spacing: 0.04em; }
+  .testimonial-stars { position: absolute; top: 16px; right: 16px; font-size: 10px; letter-spacing: 3px; color: var(--gold); }
+
+  /* ── NEWSLETTER ── */
+  .newsletter { position: relative; padding: 120px 80px; background: var(--black); overflow: hidden; display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .newsletter-bg { position: absolute; inset: 0; background-image: url('https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?w=1400&q=80'); background-size: cover; background-position: right center; opacity: 0.18; filter: grayscale(0.5); }
+  .newsletter-content { position: relative; z-index: 1; }
+  .newsletter-content h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(32px, 3vw, 52px); font-weight: 300; color: var(--white); line-height: 1.1; margin-bottom: 18px; }
+  .newsletter-content p { font-size: 11px; color: var(--grey); letter-spacing: 0.08em; line-height: 1.8; }
+  .newsletter-form { position: relative; z-index: 1; }
+  .newsletter-form .form-row { display: flex; }
+  .newsletter-form input { flex: 1; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-right: none; padding: 18px 24px; font-family: 'Montserrat', sans-serif; font-size: 11px; letter-spacing: 0.1em; color: var(--white); outline: none; transition: border-color 0.25s; }
+  .newsletter-form input::placeholder { color: rgba(255,255,255,0.3); }
+  .newsletter-form input:focus { border-color: var(--gold); }
+  .newsletter-form button { background: var(--gold); border: none; padding: 18px 36px; font-family: 'Montserrat', sans-serif; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--black); font-weight: 700; cursor: pointer; transition: background 0.25s; white-space: nowrap; }
+  .newsletter-form button:hover { background: var(--gold-light); }
+  .newsletter-note { font-size: 9px; color: rgba(255,255,255,0.2); letter-spacing: 0.08em; margin-top: 14px; }
+
+  /* ── FOOTER ── */
+  footer { background: var(--deep); border-top: 1px solid rgba(184,151,90,0.15); padding: 52px 80px 36px; }
+  .footer-main { display: grid; grid-template-columns: 1fr 1fr 1fr; align-items: center; padding-bottom: 32px; border-bottom: 1px solid rgba(255,255,255,0.06); margin-bottom: 28px; }
+  .footer-logo { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 300; letter-spacing: 0.22em; color: var(--white); text-transform: uppercase; }
+  .footer-logo span { color: var(--gold); }
+  .footer-address { font-size: 10px; color: var(--grey); letter-spacing: 0.06em; margin-top: 6px; line-height: 1.8; }
+  .footer-nav { display: flex; justify-content: center; gap: 36px; list-style: none; }
+  .footer-nav a { font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--grey); text-decoration: none; transition: color 0.2s; }
+  .footer-nav a:hover { color: var(--gold); }
+  .footer-right { text-align: right; }
+  .footer-phone { font-size: 11px; letter-spacing: 0.1em; color: var(--light-grey); margin-bottom: 12px; }
+  .footer-socials { display: flex; justify-content: flex-end; gap: 10px; }
+  .social-icon { width: 32px; height: 32px; border: 1px solid rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; color: var(--grey); font-size: 13px; text-decoration: none; transition: border-color 0.2s, color 0.2s; }
+  .social-icon:hover { border-color: var(--gold); color: var(--gold); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .footer-copy { font-size: 9px; letter-spacing: 0.1em; color: rgba(255,255,255,0.2); }
+  .footer-legal a { font-size: 9px; letter-spacing: 0.1em; color: rgba(255,255,255,0.2); text-decoration: none; transition: color 0.2s; }
+  .footer-legal a:hover { color: var(--gold); }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.22,1,0.36,1), transform 0.8s cubic-bezier(0.22,1,0.36,1); }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.08s; }
+  .reveal-delay-2 { transition-delay: 0.16s; }
+  .reveal-delay-3 { transition-delay: 0.24s; }
+  .reveal-delay-4 { transition-delay: 0.32s; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 960px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+    .nav-logo { font-size: 20px; position: static; transform: none; }
+    .hero-content { padding: 0 28px; max-width: 100%; }
+    .hero h1 { font-size: clamp(36px, 8vw, 58px); }
+    .hero-sub { font-size: 12px; max-width: 100%; }
+    .hero-scroll { left: 28px; }
+    .trust-bar { padding: 28px 24px; }
+    .products-section { padding: 60px 24px; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .tab-btn { font-size: 17px; padding: 0 18px 10px; }
+    .featured { grid-template-columns: 1fr; }
+    .featured-img { min-height: 300px; }
+    .featured-content { padding: 52px 28px; }
+    .brands-section { padding: 64px 24px; }
+    .brands-grid { gap: 32px; }
+    .brand-item { font-size: 14px; }
+    .brand-item.special { font-size: 17px; }
+    .testimonials-section { padding: 64px 24px; }
+    .testimonials-grid { grid-template-columns: 1fr; gap: 20px; }
+    .newsletter { grid-template-columns: 1fr; gap: 40px; padding: 72px 24px; }
+    footer { padding: 40px 24px 28px; }
+    .footer-main { grid-template-columns: 1fr; gap: 28px; text-align: center; }
+    .footer-nav { justify-content: center; flex-wrap: wrap; gap: 20px; }
+    .footer-right { text-align: center; }
+    .footer-socials { justify-content: center; }
+  }
+  @media (max-width: 520px) {
+    .products-grid { grid-template-columns: 1fr; }
+    .btn-outline { display: block; margin-left: 0; margin-top: 12px; text-align: center; }
+    .newsletter-form .form-row { flex-direction: column; }
+    .newsletter-form input { border-right: 1px solid rgba(255,255,255,0.15); border-bottom: none; }
+    .featured-img { min-height: 220px; }
+    .hero h1 { font-size: clamp(30px, 10vw, 46px); }
+    .hero-sub { font-size: 11px; }
+    .trust-bar { grid-template-columns: 1fr; gap: 20px; padding: 28px 24px; }
+    .trust-item:not(:last-child)::after { display: none; }
+    .product-actions { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ── NAVIGATION ── -->
+<nav id="mainNav">
+  <ul class="nav-links">
+    <li><a href="#">Home</a></li>
+    <li><a href="#">Gallery</a></li>
+    <li><a href="#">Testimonials</a></li>
+    <li><a href="#">Contact Us</a></li>
+  </ul>
+  <a href="#" class="nav-logo">Edens<span>+</span></a>
+  <div class="nav-actions">
+    <button class="nav-icon-btn" title="Wishlist" onclick="showToast('Wishlist coming soon')">
+      <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+    </button>
+    <button class="nav-icon-btn" title="Cart" onclick="showToast('Your cart is empty')">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      <span class="nav-badge" id="cartBadge">0</span>
+    </button>
+    <button class="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#" onclick="toggleMobileMenu()">Home</a>
+  <a href="#" onclick="toggleMobileMenu()">Collections</a>
+  <a href="#" onclick="toggleMobileMenu()">Brands</a>
+  <a href="#" onclick="toggleMobileMenu()">Contact Us</a>
+</div>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Rare Timepieces, Curated For You</div>
+    <h1>Allow Yourself To<br>Be A Step <em>Ahead</em></h1>
+    <p class="hero-sub">Discover horology's most elusive masterpieces — each watch in the Edens Collection is handpicked for its rarity, craftsmanship, and enduring distinction.</p>
+    <div>
+      <a href="#" class="btn-primary">Explore Collection</a>
+      <a href="#" class="btn-outline">Today's Picks</a>
+    </div>
+  </div>
+  <div class="hero-scroll"><div class="hero-scroll-line"></div>Scroll</div>
+</section>
+
+<!-- ── TRUST BAR ── -->
+<div class="trust-bar">
+  <div class="trust-item"><div class="trust-label">Extended Warranty</div><div class="trust-sub">Up to 15-Year Coverage</div></div>
+  <div class="trust-item"><div class="trust-label">Free Shipping</div><div class="trust-sub">We Offer Free Shipping Worldwide</div></div>
+  <div class="trust-item"><div class="trust-label">Free 30-Day Returns</div><div class="trust-sub">Offered On All Items</div></div>
+</div>
+
+<!-- ── PRODUCTS ── -->
+<section class="products-section">
+  <div class="products-header reveal">
+    <button class="tab-btn active" onclick="switchTab('bestsellers',this)">Best Sellers</button>
+    <button class="tab-btn" onclick="switchTab('newin',this)">New In</button>
+    <button class="tab-btn" onclick="switchTab('sale',this)">Sale</button>
+  </div>
+
+  <!-- Best Sellers -->
+  <div class="tab-panel active" id="tab-bestsellers">
+    <div class="products-grid" id="grid-bestsellers">
+      <!-- Products will be injected here by products.js -->
+    </div>
+  
+  </div>
+  </div>
+
+  <!-- New In -->
+  <div class="tab-panel" id="tab-newin">
+    <div class="products-grid" id="grid-newin">
+      <!-- Products will be injected here by products.js -->
+    </div>
+  </div>
+
+  <!-- Sale -->
+  <div class="tab-panel" id="tab-sale">
+    <div class="products-grid" id="grid-sale">
+      <!-- Products will be injected here by products.js -->
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURED SECTION ── -->
+<section class="featured">
+  <div class="featured-img">
+    <img src="https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=1000&q=80" alt="luxury watches">
+    <div class="featured-img-overlay"></div>
+  </div>
+  <div class="featured-content">
+    <div class="featured-eyebrow">Crafted For The Discerning</div>
+    <h2>More Than A Watch.<br>A Statement<br>Of Precision.</h2>
+    <p>Choose a timepiece that will not only be an integral part of your style, but also a symbol of your unparalleled precision and unyielding standard. Every Edens selection is authenticated, vetted, and delivered with white-glove care.</p>
+    <a href="#" class="btn-primary">Discover More</a>
+  </div>
+</section>
+
+<!-- ── BRANDS ── -->
+<section class="brands-section">
+  <h2 class="section-title reveal">Brands We Carry</h2>
+  <div class="gold-rule center reveal"></div>
+  <div class="brands-grid reveal">
+    <div class="brand-item">Rolex</div>
+    <div class="brand-item special">Patek Philippe</div>
+    <div class="brand-item">Omega</div>
+    <div class="brand-item">Audemars Piguet</div>
+    <div class="brand-item special">Cartier</div>
+    <div class="brand-item">IWC</div>
+    <div class="brand-item">Vacheron</div>
+    <div class="brand-item">Lange &amp; Söhne</div>
+  </div>
+</section>
+
+<!-- ── TESTIMONIALS ── -->
+<section class="testimonials-section" id="testimonials">
+  <div class="testimonials-header reveal">
+    <h2 class="section-title">Testimonials</h2>
+    <div class="gold-rule center"></div>
+    <p>What our clients say about the Edens experience</p>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial-card reveal reveal-delay-1">
+      <span class="testimonial-stars">★★★★★</span>
+      <img src="https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=500&q=80" alt="client" class="testimonial-img">
+      <div class="testimonial-body">
+        <div class="testimonial-name">Marcus K.</div>
+        <p class="testimonial-text">Edens found me a Nautilus I had been hunting for three years. The authentication process was thorough and the presentation box was immaculate. Will not shop anywhere else.</p>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-2">
+      <span class="testimonial-stars">★★★★★</span>
+      <img src="https://images.unsplash.com/photo-1619820807188-c3cc1a10bbb1?w=500&q=80" alt="client" class="testimonial-img">
+      <div class="testimonial-body">
+        <div class="testimonial-name">Amira S.</div>
+        <p class="testimonial-text">I love my new Reverso — a perfect blend of elegance and horological innovation. The attention to detail from the Edens team exceeded every expectation.</p>
+      </div>
+    </div>
+    <div class="testimonial-card reveal reveal-delay-3">
+      <span class="testimonial-stars">★★★★★</span>
+      <img src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=500&q=80" alt="client" class="testimonial-img">
+      <div class="testimonial-body">
+        <div class="testimonial-name">James O.</div>
+        <p class="testimonial-text">Outstanding customer service and a remarkable selection. They helped me find the perfect watch that suits my style and portfolio. Already a repeat client.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── NEWSLETTER ── -->
+<section class="newsletter">
+  <div class="newsletter-bg"></div>
+  <div class="newsletter-content">
+    <h2>Be The First<br>To Know</h2>
+    <div class="gold-rule"></div>
+    <p>Discover how to find the best watch and enjoy exclusive products and offers via email. Rare arrivals sell fast — get priority access.</p>
+  </div>
+  <div class="newsletter-form">
+    <div class="form-row">
+      <input type="email" placeholder="Your Email Address">
+      <button type="button" onclick="showToast('You are subscribed!')">Subscribe</button>
+    </div>
+    <p class="newsletter-note">No spam. Unsubscribe anytime. Your data is safe with us.</p>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-main">
+    <div>
+      <div class="footer-logo">Edens<span>+</span></div>
+      <div class="footer-address">14 Limuru Road, Nairobi, Kenya 00100</div>
+    </div>
+    <ul class="footer-nav">
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Gallery</a></li>
+      <li><a href="#">Testimonials</a></li>
+      <li><a href="#">Contact Us</a></li>
+    </ul>
+    <div class="footer-right">
+      <div class="footer-phone">+254 700 000 000</div>
+      <div class="footer-socials">
+        <a href="#" class="social-icon">in</a>
+        <a href="#" class="social-icon">𝕏</a>
+        <a href="#" class="social-icon">ig</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div class="footer-copy">© 2025 Edens Collection. All rights reserved.</div>
+    <div class="footer-legal"><a href="#">Privacy Policy</a></div>
+  </div>
+</footer>
+
+<script>
+  let cartCount = 0;
+
+  function addToCart(name) {
+    cartCount++;
+    document.getElementById('cartBadge').textContent = cartCount;
+    showToast(name + ' added to cart');
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function toggleMobileMenu() {
+    document.getElementById('mobileMenu').classList.toggle('open');
+  }
+
+  function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    btn.classList.add('active');
+    document.querySelectorAll('#tab-' + id + ' .reveal').forEach(el => {
+      el.classList.remove('visible');
+      setTimeout(() => el.classList.add('visible'), 60);
+    });
+  }
+
+  // Scroll reveal
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Nav scroll
+  window.addEventListener('scroll', () => {
+    document.getElementById('mainNav').style.background =
+      window.scrollY > 60 ? 'rgba(10,10,10,0.98)' : 'rgba(10,10,10,0.92)';
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
+<script src="products.js"></script>
+</body>
+</html>
