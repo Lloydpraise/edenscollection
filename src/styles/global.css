@@ -3257,3 +3257,11 @@ a.contact-card:hover {
 .category-body a:hover {
   color: var(--royal);
 }
+.pcard.is-sold .pcard-img img {
+  filter: grayscale(0.6);
+  opacity: 0.75;
+}
+.pcard-add:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}

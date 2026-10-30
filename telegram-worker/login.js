@@ -1,12 +1,9 @@
-// One-time Telegram login. Run on the server with `npm run login`: it asks for the phone number, the code
-// Telegram sends to the app, and the 2-step verification password if one is set, then saves the session to
-// data/session.txt so the daily sync can run without anyone at the keyboard.
+// One-time Telegram login with `npm run login`: asks for the phone number, the code Telegram sends to the app
+// and the 2-step verification password if one is set, then prints a session string. Put it in .env as
+// TG_SESSION (on the laptop and on the server) and the worker runs without anyone at the keyboard.
 
 import { createInterface } from "node:readline/promises";
-import { mkdir } from "node:fs/promises";
-import { connect, saveSession, config } from "./lib/telegram.js";
-
-await mkdir(new URL("./data/", import.meta.url), { recursive: true });
+import { connect, config } from "./lib/telegram.js";
 const rl = createInterface({ input: process.stdin, output: process.stdout });
 const ask = (q) => rl.question(q);
 
@@ -17,10 +14,10 @@ await client.start({
   password: () => ask("2-step verification password (Enter if none): "),
   onError: (err) => console.error(err.message),
 });
-await saveSession(client);
-
 const me = await client.getMe();
-console.log(`\nLogged in as ${me.firstName ?? ""} ${me.username ? `(@${me.username})` : ""}. Session saved to sync/data/session.txt.`);
+console.log(`\nLogged in as ${me.firstName ?? ""} ${me.username ? `(@${me.username})` : ""}.`);
+console.log("\nAdd this line to .env (keep it secret, it is full access to the account):\n");
+console.log(`TG_SESSION=${client.session.save()}\n`);
 
 const { channel } = config();
 if (channel) {
@@ -35,7 +32,7 @@ if (channel) {
   for await (const d of client.iterDialogs({ limit: 200 })) {
     if (d.isChannel || d.isGroup) console.log(`  ${d.id}  ${d.title}`);
   }
-  console.log("Put the supplier's id (or @username) in sync/.env as TG_CHANNEL.");
+  console.log("Put the supplier's id (or @username) in .env as TG_CHANNEL, or in /admin's sync settings.");
 }
 
 rl.close();

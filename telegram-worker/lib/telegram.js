@@ -3,33 +3,26 @@
 // A bot can't be used here: bots only see channels where they are an admin, and the supplier's channel is
 // someone else's. A user account (Lloyd's, or a spare number) sees whatever channels it has joined.
 
-import { readFile, writeFile, chmod } from "node:fs/promises";
 import { TelegramClient } from "telegram";
 import { StringSession } from "telegram/sessions/index.js";
-
-export const SESSION_FILE = new URL("../data/session.txt", import.meta.url);
 
 export function config() {
   const apiId = Number(process.env.TG_API_ID);
   const apiHash = process.env.TG_API_HASH;
   const channel = process.env.TG_CHANNEL;
-  if (!apiId || !apiHash) throw new Error("Set TG_API_ID and TG_API_HASH in sync/.env (from https://my.telegram.org > API development tools).");
-  return { apiId, apiHash, channel };
+  if (!apiId || !apiHash) throw new Error("Set TG_API_ID and TG_API_HASH in telegram-worker/.env (from https://my.telegram.org > API development tools).");
+  return { apiId, apiHash, channel, session: process.env.TG_SESSION || "" };
 }
 
+// The login lives in TG_SESSION (printed by `npm run login`), so the same .env works on the laptop and the
+// server. Treat it like a password: it is full access to the Telegram account.
 export async function connect({ interactive = false } = {}) {
-  const { apiId, apiHash } = config();
-  const saved = await readFile(SESSION_FILE, "utf8").catch(() => "");
-  if (!saved && !interactive) throw new Error("Not logged in to Telegram yet. Run `npm run login` once on this machine.");
+  const { apiId, apiHash, session } = config();
+  if (!session && !interactive) throw new Error("Not logged in to Telegram yet. Run `npm run login` and put the session it prints in .env as TG_SESSION.");
 
-  const client = new TelegramClient(new StringSession(saved.trim()), apiId, apiHash, { connectionRetries: 5 });
+  const client = new TelegramClient(new StringSession(session.trim()), apiId, apiHash, { connectionRetries: 5 });
   client.setLogLevel("error");
   return client;
-}
-
-export async function saveSession(client) {
-  await writeFile(SESSION_FILE, client.session.save(), { mode: 0o600 });
-  await chmod(SESSION_FILE, 0o600).catch(() => {});
 }
 
 // Telegram message -> the plain shape groupPosts() works with.
@@ -41,13 +34,16 @@ export function simplify(m) {
     text: m.message || "",
     hasPhoto: Boolean(m.photo || imageDocument),
     groupedId: m.groupedId ? m.groupedId.toString() : null,
+    replyTo: m.replyTo?.replyToMsgId ?? null,
+    editDate: m.editDate ?? null,
   };
 }
 
-// Messages after `minId`, or the latest `limit` when starting fresh.
-export async function fetchSince(client, channel, { minId = 0, limit }) {
+// Every message after `minId` (0 = the whole channel history).
+export async function fetchSince(client, channel, { minId = 0, onProgress } = {}) {
   const out = [];
-  for await (const m of client.iterMessages(channel, minId ? { minId } : { limit })) {
+  for await (const m of client.iterMessages(channel, { minId, limit: undefined })) {
+    if (onProgress && out.length % 500 === 0) onProgress(out.length);
     if (m.className === "Message") out.push(m);
   }
   return out;

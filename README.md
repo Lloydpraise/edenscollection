@@ -19,8 +19,9 @@ Node 22.12 or newer.
 | --- | --- |
 | `src/data/products.js` | The catalogue: sample watches plus the supplier's stock from `supplier-products.json`. |
 | `src/data/categories.js` | Departments and subcategories (watches, bags, shoes, jewellery…) with the keywords that file each product. |
-| `src/data/supplier-products.json`, `public/products/` | Written by the Telegram sync, don't edit by hand. |
-| `sync/` | Daily import from the supplier's Telegram channel. See [sync/README.md](sync/README.md). |
+| `src/data/supplier.js` | Loads the supplier's stock from Supabase at build time (`SUPABASE_URL`, `SUPABASE_ANON_KEY`). |
+| `telegram-worker/` | Imports the supplier's Telegram channel into Supabase. See [telegram-worker/README.md](telegram-worker/README.md). |
+| `supabase/migrations/` | SQL for VVStudios, e.g. the public `edens_storefront_products` view the site reads. |
 | `src/data/reviews.js`, `faqs.js`, `info.js`, `site.js` | Mock reviews, product FAQs, client-care pages, contact details, delivery and payment options. |
 | `src/lib/watchArt.js` | Draws the illustrated watch renders served at `/watches/<slug>-<view>.svg` until photography exists. |
 | `src/lib/cart.js` | Bag and wishlist, kept in `localStorage` and shared by every island. |
