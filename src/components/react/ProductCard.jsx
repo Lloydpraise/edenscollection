@@ -30,7 +30,7 @@ export default function ProductCard({ product, eager = false, dark, wished = fal
           <span className="pcard-brand">{product.brand}</span>
           <h3 className="pcard-name">{product.name}</h3>
           <span className="pcard-meta">
-            {product.caseSize} · Ref. {product.reference}
+            {[product.caseSize, product.reference && `Ref. ${product.reference}`].filter(Boolean).join(" · ")}
           </span>
         </a>
         <div className="pcard-buy">

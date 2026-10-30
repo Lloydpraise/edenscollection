@@ -1,0 +1,37 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { catalogueTree, products, coverImage } from "../../data/products.js";
+
+const cover = (slug: string) => coverImage(products.find((p) => p.department === slug && p.images?.length) || products.find((p) => p.department === slug)!);
+---
+
+<Layout title="Shop by category" description="Watches, bags, shoes, jewellery and accessories from Edens, delivered across Kenya.">
+  <section class="page-hero page-hero-sm">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Categories" }]} />
+      <h1>Shop by category</h1>
+    </div>
+  </section>
+  <section class="section section-tight">
+    <div class="wrap category-grid">
+      {
+        catalogueTree.map((d) => (
+          <article class="category-card">
+            <a class="category-media" href={`/category/${d.slug}`} tabindex="-1" aria-hidden="true">
+              <img src={cover(d.slug)} alt="" loading="lazy" width="600" height="450" />
+            </a>
+            <div class="category-body">
+              <h2><a href={`/category/${d.slug}`}>{d.label}</a> <span class="subnav-count">{d.count}</span></h2>
+              <ul>
+                {d.subcategories.map((s) => (
+                  <li><a href={`/category/${d.slug}/${s.slug}`}>{s.label}</a> <span class="subnav-count">{s.count}</span></li>
+                ))}
+              </ul>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+</Layout>

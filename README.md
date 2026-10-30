@@ -17,7 +17,10 @@ Node 22.12 or newer.
 
 | Path | What |
 | --- | --- |
-| `src/data/products.js` | The watch catalogue (mock data). Add `images: [url, …]` to a watch to use real photos. |
+| `src/data/products.js` | The catalogue: sample watches plus the supplier's stock from `supplier-products.json`. |
+| `src/data/categories.js` | Departments and subcategories (watches, bags, shoes, jewellery…) with the keywords that file each product. |
+| `src/data/supplier-products.json`, `public/products/` | Written by the Telegram sync, don't edit by hand. |
+| `sync/` | Daily import from the supplier's Telegram channel. See [sync/README.md](sync/README.md). |
 | `src/data/reviews.js`, `faqs.js`, `info.js`, `site.js` | Mock reviews, product FAQs, client-care pages, contact details, delivery and payment options. |
 | `src/lib/watchArt.js` | Draws the illustrated watch renders served at `/watches/<slug>-<view>.svg` until photography exists. |
 | `src/lib/cart.js` | Bag and wishlist, kept in `localStorage` and shared by every island. |
@@ -28,7 +31,7 @@ Node 22.12 or newer.
 ## Pages
 
 Home, shop (all, men, women, pre-owned, new arrivals, sale, with filters and `?q=` / `?brand=`), product
-detail, The Black Collection, bag, checkout, wishlist, contact, client-care pages and a 404.
+detail, categories (`/category`, `/category/<department>/<subcategory>`), The Black Collection, bag, checkout, wishlist, contact, client-care pages and a 404.
 
 ## Not wired up yet
 

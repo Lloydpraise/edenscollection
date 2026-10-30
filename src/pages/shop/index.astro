@@ -1,8 +1,13 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import ShopPage from "../../components/ShopPage.astro";
+import { catalogueTree } from "../../data/products.js";
 ---
 
-<Layout title="Shop all watches" description="Shop authenticated new and pre-owned luxury watches in Kenya. Filter by brand, price and condition.">
-  <ShopPage title="All watches" intro="Every piece in the salon, authenticated and ready to ship. Filter by maison, price or condition." />
+<Layout title="Shop all" description="Shop luxury watches, bags and accessories in Kenya. Filter by brand, price and condition.">
+  <ShopPage
+    title="Shop all"
+    intro="Every piece in the salon, checked and ready to ship. Filter by maison, price or condition."
+    subnav={catalogueTree.map((d) => ({ label: d.label, href: `/category/${d.slug}`, count: d.count }))}
+  />
 </Layout>

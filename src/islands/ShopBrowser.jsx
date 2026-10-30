@@ -42,7 +42,7 @@ function Group({ title, name, options, products, sel, setSel }) {
   );
 }
 
-export default function ShopBrowser({ products, brands, preset = {} }) {
+export default function ShopBrowser({ products, brands, preset = {}, noun = ["watch", "watches"] }) {
   const [q, setQ] = useState("");
   const [sel, setSel] = useState({ brand: [], category: preset.category || [], condition: preset.condition || [], price: [] });
   const [saleOnly, setSaleOnly] = useState(Boolean(preset.sale));
@@ -104,7 +104,7 @@ export default function ShopBrowser({ products, brands, preset = {} }) {
           <span>On sale only</span>
         </label>
         <button className="btn btn-royal btn-block filters-apply" type="button" onClick={() => setPanel(false)}>
-          Show {list.length} {list.length === 1 ? "watch" : "watches"}
+          Show {list.length} {list.length === 1 ? noun[0] : noun[1]}
         </button>
       </aside>
 
@@ -114,7 +114,7 @@ export default function ShopBrowser({ products, brands, preset = {} }) {
             Filters {active.length > 0 && `(${active.length})`}
           </button>
           <p className="shop-count">
-            {list.length} {list.length === 1 ? "watch" : "watches"}
+            {list.length} {list.length === 1 ? noun[0] : noun[1]}
             {list.length > 0 && <span> · from {formatKsh(Math.min(...list.map((p) => p.price)))}</span>}
           </p>
           <label className="sort">
@@ -140,7 +140,7 @@ export default function ShopBrowser({ products, brands, preset = {} }) {
 
         {list.length === 0 ? (
           <div className="shop-empty">
-            <h3>No watches match those filters</h3>
+            <h3>No {noun[1]} match those filters</h3>
             <p>Try removing a filter, or ask our concierge to source a specific reference for you.</p>
             <button className="btn btn-royal" type="button" onClick={clearAll}>Clear filters</button>
           </div>

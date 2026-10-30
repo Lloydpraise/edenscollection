@@ -5,7 +5,7 @@ import { watchSvg } from "../../lib/watchArt.js";
 const VIEWS = ["front", "dial", "salon"];
 
 export function getStaticPaths() {
-  return products.flatMap((p) => VIEWS.map((view) => ({ params: { file: `${p.slug}-${view}` }, props: { art: p.art, view } })));
+  return products.filter((p) => p.art && !p.images?.length).flatMap((p) => VIEWS.map((view) => ({ params: { file: `${p.slug}-${view}` }, props: { art: p.art, view } })));
 }
 
 export function GET({ props }) {

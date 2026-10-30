@@ -8,23 +8,41 @@ interface Props {
   title: string;
   intro: string;
   crumb?: string;
-  preset?: { category?: string[]; condition?: string[]; sale?: boolean; tag?: string };
+  crumbs?: { label: string; href?: string }[];
+  // Links shown under the title, e.g. a department's subcategories.
+  subnav?: { label: string; href: string; count: number; active?: boolean }[];
+  preset?: { category?: string[]; condition?: string[]; sale?: boolean; tag?: string; department?: string; subcategory?: string };
 }
-const { title, intro, crumb, preset = {} } = Astro.props;
-const pool = preset.tag ? products.filter((p) => p.tags.includes(preset.tag!)) : products;
+const { title, intro, crumb, crumbs = crumb ? [{ label: crumb }] : [], subnav = [], preset = {} } = Astro.props;
+const { tag, department, subcategory, ...filters } = preset;
+const pool = products.filter(
+  (p) => (!tag || p.tags.includes(tag)) && (!department || p.department === department) && (!subcategory || p.subcategory === subcategory),
+);
 const list = pool.map(toCardProduct);
-const { tag, ...filters } = preset;
+const noun = pool.every((p) => p.department === "watches") ? ["watch", "watches"] : ["piece", "pieces"];
+const poolBrands = brands.filter((b) => pool.some((p) => p.brand === b));
 ---
 
 <section class="page-hero">
   <div class="wrap">
-    <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Shop", href: "/shop" }, ...(crumb ? [{ label: crumb }] : [])]} />
+    <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Shop", href: "/shop" }, ...crumbs]} />
     <h1>{title}</h1>
     <p>{intro}</p>
+    {
+      subnav.length > 0 && (
+        <nav class="subnav" aria-label="Subcategories">
+          {subnav.map((s) => (
+            <a href={s.href} class:list={["chip", s.active && "chip-on"]} aria-current={s.active ? "page" : undefined}>
+              {s.label} <span class="subnav-count">{s.count}</span>
+            </a>
+          ))}
+        </nav>
+      )
+    }
   </div>
 </section>
 <section class="section section-tight">
   <div class="wrap">
-    <ShopBrowser client:load products={list} brands={brands} preset={filters} />
+    <ShopBrowser client:load products={list} brands={poolBrands} preset={filters} noun={noun} />
   </div>
 </section>

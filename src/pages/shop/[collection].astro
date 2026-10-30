@@ -4,8 +4,8 @@ import ShopPage from "../../components/ShopPage.astro";
 
 export function getStaticPaths() {
   return [
-    { params: { collection: "men" }, props: { title: "Men's watches", intro: "Divers, dress watches and chronographs, from 39 mm to statement size.", preset: { category: ["men", "unisex"] } } },
-    { params: { collection: "women" }, props: { title: "Women's watches", intro: "Jewellery-grade cases, mother-of-pearl dials and icons that never date.", preset: { category: ["women", "unisex"] } } },
+    { params: { collection: "men" }, props: { title: "Men's watches", intro: "Divers, dress watches and chronographs, from 39 mm to statement size.", preset: { department: "watches", category: ["men", "unisex"] } } },
+    { params: { collection: "women" }, props: { title: "Women's watches", intro: "Jewellery-grade cases, mother-of-pearl dials and icons that never date.", preset: { department: "watches", category: ["women", "unisex"] } } },
     { params: { collection: "pre-owned" }, props: { title: "Certified pre-owned", intro: "Serviced, authenticated and covered by a 2-year Edens warranty, extendable to five.", preset: { condition: ["pre-owned"] } } },
     { params: { collection: "new-arrivals" }, props: { title: "New arrivals", intro: "The latest pieces to reach our Limuru Road salon.", preset: { tag: "new" } } },
     { params: { collection: "sale" }, props: { title: "Seasonal offers", intro: "Selected new watches at our best prices of the season, while stock lasts.", preset: { sale: true } } },
