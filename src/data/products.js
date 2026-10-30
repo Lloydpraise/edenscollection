@@ -8,8 +8,17 @@
 //   condition  new | pre-owned
 //   exclusive  true puts the watch in The Black Collection (shown on black)
 //   tags       bestseller | new  (drive the home page rails)
+//   department / subcategory  see categories.js (the sample watches below all sit under watches)
+//
+// Real stock arrives from the supplier's Telegram channel: telegram-worker/ saves it in Supabase and
+// supplier.js reads it at build time. It is listed after the samples here.
 
-export const products = [
+import { loadSupplierProducts } from "./supplier.js";
+import { departments, getDepartment } from "./categories.js";
+
+const NEW_FOR_DAYS = 21;
+
+const sampleProducts = [
   {
     id: "w001",
     slug: "rolex-submariner-date-126610lv",
@@ -442,7 +451,33 @@ export const products = [
     images: [],
     art: { shape: "round", metal: "twotone", dial: "#4a2c22", bezel: "#d6a88c", bezelType: "smooth", strap: "bracelet", hands: "baton", date: true },
   },
-];
+].map((p) => ({ department: "watches", subcategory: p.category === "women" ? "women" : "men", ...p }));
+
+// Supplier pieces have photos, so they skip the illustrations; recent ones get the "new" tag.
+const supplierProducts = (await loadSupplierProducts()).map((p) => ({
+  ...p,
+  art: null,
+  tags: p.stock > 0 && Date.now() - Date.parse(p.addedAt) < NEW_FOR_DAYS * 864e5 ? ["new"] : [],
+}));
+
+export const products = [...sampleProducts, ...supplierProducts];
+
+// Departments and subcategories that have at least one product, with counts, for menus and /category pages.
+// Watches lead, the rest follow the order in categories.js.
+export const catalogueTree = [...departments]
+  .sort((a, b) => (b.slug === "watches") - (a.slug === "watches"))
+  .map((d) => {
+    const items = products.filter((p) => p.department === d.slug);
+    const subcategories = d.subcategories
+      .map((s) => ({ slug: s.slug, label: s.label, count: items.filter((p) => p.subcategory === s.slug).length }))
+      .filter((s) => s.count);
+    return { slug: d.slug, label: d.label, count: items.length, subcategories };
+  })
+  .filter((d) => d.count);
+
+export function departmentLabel(slug) {
+  return getDepartment(slug)?.label ?? slug;
+}
 
 export const brands = [...new Set(products.map((p) => p.brand))].sort();
 
@@ -475,6 +510,8 @@ export function toCardProduct(p) {
     tags: p.tags,
     stock: p.stock,
     caseSize: p.caseSize,
+    department: p.department,
+    subcategory: p.subcategory,
     image: coverImage(p),
   };
 }

@@ -5,7 +5,7 @@ import ProductRail from "../../components/ProductRail.astro";
 import Reviews from "../../components/Reviews.astro";
 import ProductGallery from "../../islands/ProductGallery.jsx";
 import BuyBox from "../../islands/BuyBox.jsx";
-import { products, galleryImages, relatedProducts, toCardProduct, coverImage } from "../../data/products.js";
+import { products, galleryImages, relatedProducts, toCardProduct, coverImage, departmentLabel } from "../../data/products.js";
 import { ratingSummary } from "../../data/reviews.js";
 import { productFaqs } from "../../data/faqs.js";
 import { site } from "../../data/site.js";
@@ -20,8 +20,12 @@ const dark = product.exclusive;
 const off = percentOff(product.price, product.compareAt);
 const { average, count } = ratingSummary(product.id);
 const related = relatedProducts(product);
+const isWatch = product.department === "watches";
+const fromSupplier = product.source === "telegram";
 const categoryCrumb =
-  product.exclusive
+  !isWatch
+    ? { label: departmentLabel(product.department), href: `/category/${product.department}` }
+    : product.exclusive
     ? { label: "Black Collection", href: "/exclusive" }
     : product.condition === "pre-owned"
       ? { label: "Pre-owned", href: "/shop/pre-owned" }
@@ -29,7 +33,7 @@ const categoryCrumb =
         ? { label: "Women", href: "/shop/women" }
         : { label: "Men", href: "/shop/men" };
 
-const specs = [
+const specs = ([
   ["Brand", product.brand],
   ["Model", product.name],
   ["Reference", product.reference],
@@ -42,7 +46,8 @@ const specs = [
   ["Strap / bracelet", product.strap],
   ["Water resistance", product.waterResistance],
   ["Box & papers", product.boxPapers],
-];
+] as [string, unknown][]).filter(([, v]) => v);
+const refLine = [product.reference && `Ref. ${product.reference}`, product.caseSize, product.caseMaterial].filter(Boolean).join(" · ");
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -75,12 +80,12 @@ const jsonLd = {
         <div class="product-panel">
           <div class="product-tags">
             {product.exclusive && <span class="badge badge-gold">Black Collection</span>}
-            <span class="badge badge-line">{product.condition === "new" ? "New / unworn" : "Certified pre-owned"}</span>
+            <span class="badge badge-line">{product.condition === "new" ? (isWatch ? "New / unworn" : "New") : "Certified pre-owned"}</span>
             {off > 0 && <span class="badge badge-royal">−{off}%</span>}
           </div>
           <a class="product-brand" href={`/shop?brand=${encodeURIComponent(product.brand)}`}>{product.brand}</a>
           <h1>{product.name}</h1>
-          <p class="product-ref">Ref. {product.reference} · {product.caseSize} · {product.caseMaterial}</p>
+          {refLine && <p class="product-ref">{refLine}</p>}
           {
             count > 0 && (
               <a class="product-rating" href="#reviews">
@@ -104,10 +109,11 @@ const jsonLd = {
           <BuyBox client:load product={toCardProduct(product)} whatsapp={site.whatsapp} dark={dark} />
 
           <ul class="assurance-list">
-            <li><strong>Authenticity guaranteed.</strong> Signed Edens certificate in the box.</li>
+            {/* Supplier pieces carry no certificate or warranty until Lloyd confirms what applies to them. */}
+            {!fromSupplier && <li><strong>Authenticity guaranteed.</strong> Signed Edens certificate in the box.</li>}
             <li><strong>Insured delivery.</strong> Same day in Nairobi, 1 – 2 days countrywide.</li>
-            <li><strong>{product.condition === "new" ? "Manufacturer warranty." : "2-year Edens warranty."}</strong> Extendable to 5 years.</li>
-            <li><strong>14-day returns</strong> on unworn watches with full set.</li>
+            {!fromSupplier && <li><strong>{product.condition === "new" ? "Manufacturer warranty." : "2-year Edens warranty."}</strong> Extendable to 5 years.</li>}
+            <li><strong>14-day returns</strong> on {isWatch ? "unworn watches with full set" : "unused pieces in their original packaging"}.</li>
           </ul>
         </div>
       </div>
@@ -117,7 +123,7 @@ const jsonLd = {
   <section class="section product-details">
     <div class="wrap details-grid">
       <div>
-        <span class="eyebrow">About this watch</span>
+        <span class="eyebrow">About this {isWatch ? "watch" : "piece"}</span>
         <h2>The details</h2>
         <p class="lead">{product.description}</p>
         <table class="spec-table">

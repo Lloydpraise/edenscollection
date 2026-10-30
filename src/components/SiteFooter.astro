@@ -1,6 +1,6 @@
 ---
 import { site } from "../data/site.js";
-import { brands } from "../data/products.js";
+import { brands, catalogueTree } from "../data/products.js";
 const year = new Date().getFullYear();
 ---
 
@@ -34,7 +34,8 @@ const year = new Date().getFullYear();
     <div>
       <h3>Shop</h3>
       <ul>
-        <li><a href="/shop">All watches</a></li>
+        <li><a href="/shop">Shop all</a></li>
+        {catalogueTree.filter((d) => d.slug !== "watches").map((d) => <li><a href={`/category/${d.slug}`}>{d.label}</a></li>)}
         <li><a href="/shop/men">Men's watches</a></li>
         <li><a href="/shop/women">Women's watches</a></li>
         <li><a href="/shop/pre-owned">Pre-owned</a></li>

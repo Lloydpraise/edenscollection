@@ -1,0 +1,28 @@
+---
+// /category/<department> and /category/<department>/<subcategory>, built for every one that has products.
+import Layout from "../../layouts/Layout.astro";
+import ShopPage from "../../components/ShopPage.astro";
+import { catalogueTree } from "../../data/products.js";
+
+export function getStaticPaths() {
+  return catalogueTree.flatMap((d) => [
+    { params: { path: d.slug }, props: { department: d } },
+    ...d.subcategories.map((s) => ({ params: { path: `${d.slug}/${s.slug}` }, props: { department: d, sub: s } })),
+  ]);
+}
+
+const { department, sub } = Astro.props;
+const title = sub ? sub.label : department.label;
+const intro = sub
+  ? `${sub.count} ${sub.count === 1 ? "piece" : "pieces"} in ${department.label.toLowerCase()}, checked by the Edens team and ready to ship.`
+  : `${department.count} ${department.count === 1 ? "piece" : "pieces"}, checked by the Edens team and ready to ship.`;
+const subnav = [
+  { label: `All ${department.label.toLowerCase()}`, href: `/category/${department.slug}`, count: department.count, active: !sub },
+  ...department.subcategories.map((s) => ({ label: s.label, href: `/category/${department.slug}/${s.slug}`, count: s.count, active: s.slug === sub?.slug })),
+];
+const crumbs = sub ? [{ label: department.label, href: `/category/${department.slug}` }, { label: sub.label }] : [{ label: department.label }];
+---
+
+<Layout title={title} description={intro}>
+  <ShopPage title={title} intro={intro} crumbs={crumbs} subnav={subnav} preset={{ department: department.slug, subcategory: sub?.slug }} />
+</Layout>

@@ -38,7 +38,7 @@ export default function CartPage() {
             <div className="cart-line-info">
               <span className="line-brand">{item.brand}</span>
               <a className="line-name" href={`/product/${item.slug}`}>{item.name}</a>
-              <span className="line-meta">Ref. {item.reference} · {item.caseSize} · {item.condition === "new" ? "New" : "Pre-owned"}</span>
+              <span className="line-meta">{[`Ref. ${item.reference}`, item.caseSize, item.condition === "new" ? "New" : "Pre-owned"].filter(Boolean).join(" · ")}</span>
               <span className="line-meta">{formatKsh(item.price)} each</span>
               <button className="link-btn" type="button" onClick={() => removeFromCart(item.id)}>Remove</button>
             </div>
