@@ -1,0 +1,62 @@
+---
+import { reviewsFor, ratingSummary } from "../data/reviews.js";
+import { site } from "../data/site.js";
+
+interface Props {
+  product: { id: string; brand: string; name: string };
+}
+const { product } = Astro.props;
+const list = reviewsFor(product.id);
+const { average, count } = ratingSummary(product.id);
+const bars = [5, 4, 3, 2, 1].map((n) => ({ n, c: list.filter((r) => r.rating === n).length }));
+const date = (iso: string) => new Date(iso).toLocaleDateString("en-KE", { month: "short", year: "numeric" });
+const ask = encodeURIComponent(`Hello Edens Watches, I'd like to leave a review for my ${product.brand} ${product.name}.`);
+---
+
+<section class="section reviews" id="reviews">
+  <div class="wrap reviews-grid">
+    <div class="reviews-summary">
+      <span class="eyebrow">Client reviews</span>
+      {
+        count > 0 ? (
+          <>
+            <div class="rating-big">
+              <strong>{average.toFixed(1)}</strong>
+              <span class="stars" style={`--rating:${average}`} aria-label={`${average.toFixed(1)} out of 5 stars`} />
+              <span class="muted">{count} {count === 1 ? "review" : "reviews"}</span>
+            </div>
+            <ul class="rating-bars">
+              {bars.map((b) => (
+                <li>
+                  <span>{b.n}★</span>
+                  <span class="bar"><span style={`width:${(b.c / count) * 100}%`} /></span>
+                  <span class="muted">{b.c}</span>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p class="muted">No reviews for this watch yet. Every Edens client is invited to review after delivery.</p>
+        )
+      }
+      <a class="btn btn-ghost btn-sm" href={`https://wa.me/${site.whatsapp}?text=${ask}`} target="_blank" rel="noopener">Bought this? Leave a review</a>
+    </div>
+    <div class="reviews-list">
+      {
+        list.map((r) => (
+          <article class="review reveal">
+            <header>
+              <span class="stars stars-sm" style={`--rating:${r.rating}`} aria-label={`${r.rating} out of 5 stars`} />
+              <span class="muted">{date(r.date)}</span>
+            </header>
+            <h3>{r.title}</h3>
+            <p>{r.body}</p>
+            <footer>
+              <strong>{r.name}</strong> <span class="verified">Verified purchase</span>
+            </footer>
+          </article>
+        ))
+      }
+    </div>
+  </div>
+</section>

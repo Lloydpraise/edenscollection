@@ -1,0 +1,115 @@
+---
+import "../styles/global.css";
+import Ticker from "../components/Ticker.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+import CartDrawer from "../islands/CartDrawer.jsx";
+
+interface Props {
+  title?: string;
+  description?: string;
+  dark?: boolean; // black page (The Black Collection)
+  image?: string;
+}
+
+const {
+  title,
+  description = "Edens Watches: authenticated new and pre-owned luxury watches in Nairobi. Rolex, Patek Philippe, Audemars Piguet, Omega, Cartier and more, delivered insured across Kenya.",
+  dark = false,
+  image = "/og.svg",
+} = Astro.props;
+const fullTitle = title ? `${title} | Edens Watches` : "Edens Watches | Luxury & Rare Timepieces in Kenya";
+---
+
+<!doctype html>
+<html lang="en-KE">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={dark ? "#0a0a0a" : "#0b4f3a"} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site)} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <slot name="head" />
+  </head>
+  <body class:list={[dark && "page-dark"]}>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <Ticker />
+    <SiteHeader dark={dark} />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter />
+    <CartDrawer client:idle />
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script>
+      import { addToCart, openCart, toggleWishlist, getWishlist, WISH_EVENT } from "../lib/cart.js";
+
+      // Product card buttons (static and island-rendered) share one listener.
+      const toast = document.getElementById("toast");
+      let toastTimer: ReturnType<typeof setTimeout>;
+      function showToast(text: string) {
+        if (!toast) return;
+        toast.textContent = text;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove("show"), 2400);
+      }
+
+      document.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        const add = target.closest<HTMLElement>("[data-add-to-cart]");
+        if (add) {
+          addToCart(JSON.parse(add.dataset.addToCart!), 1);
+          openCart();
+          return;
+        }
+        const wish = target.closest<HTMLElement>("[data-wish]");
+        if (wish) {
+          const product = JSON.parse(wish.dataset.wish!);
+          const saved = toggleWishlist(product);
+          showToast(saved ? `${product.name} saved to your wishlist` : `${product.name} removed from your wishlist`);
+        }
+      });
+
+      function syncHearts() {
+        const ids = new Set(getWishlist().map((p: { id: string }) => p.id));
+        document.querySelectorAll<HTMLElement>("[data-wish]").forEach((btn) => {
+          const id = btn.closest<HTMLElement>("[data-product-id]")?.dataset.productId;
+          btn.setAttribute("aria-pressed", String(Boolean(id && ids.has(id))));
+        });
+      }
+      syncHearts();
+      window.addEventListener(WISH_EVENT, () => requestAnimationFrame(syncHearts));
+
+      // Scroll reveal
+      const io = new IntersectionObserver(
+        (entries) =>
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("in-view");
+              io.unobserve(entry.target);
+            }
+          }),
+        { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+      );
+      document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
+
+      // Header shrinks after scrolling
+      const header = document.getElementById("siteHeader");
+      const onScroll = () => header?.classList.toggle("scrolled", window.scrollY > 24);
+      onScroll();
+      window.addEventListener("scroll", onScroll, { passive: true });
+    </script>
+  </body>
+</html>

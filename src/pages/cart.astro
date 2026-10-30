@@ -1,0 +1,21 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import ProductRail from "../components/ProductRail.astro";
+import CartPage from "../islands/CartPage.jsx";
+import { products } from "../data/products.js";
+const picks = products.filter((p) => p.tags.includes("bestseller") && !p.exclusive).slice(0, 4);
+---
+
+<Layout title="Your bag">
+  <section class="page-hero page-hero-sm">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Bag" }]} />
+      <h1>Your bag</h1>
+    </div>
+  </section>
+  <section class="section section-tight">
+    <div class="wrap"><CartPage client:load /></div>
+  </section>
+  <ProductRail title="Clients also viewed" products={picks} />
+</Layout>

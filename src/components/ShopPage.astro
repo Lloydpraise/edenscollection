@@ -1,0 +1,30 @@
+---
+// Shared body for /shop and /shop/<collection>.
+import Breadcrumbs from "./Breadcrumbs.astro";
+import ShopBrowser from "../islands/ShopBrowser.jsx";
+import { products, brands, toCardProduct } from "../data/products.js";
+
+interface Props {
+  title: string;
+  intro: string;
+  crumb?: string;
+  preset?: { category?: string[]; condition?: string[]; sale?: boolean; tag?: string };
+}
+const { title, intro, crumb, preset = {} } = Astro.props;
+const pool = preset.tag ? products.filter((p) => p.tags.includes(preset.tag!)) : products;
+const list = pool.map(toCardProduct);
+const { tag, ...filters } = preset;
+---
+
+<section class="page-hero">
+  <div class="wrap">
+    <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Shop", href: "/shop" }, ...(crumb ? [{ label: crumb }] : [])]} />
+    <h1>{title}</h1>
+    <p>{intro}</p>
+  </div>
+</section>
+<section class="section section-tight">
+  <div class="wrap">
+    <ShopBrowser client:load products={list} brands={brands} preset={filters} />
+  </div>
+</section>

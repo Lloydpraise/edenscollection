@@ -1,0 +1,79 @@
+---
+import { site } from "../data/site.js";
+import { brands } from "../data/products.js";
+const year = new Date().getFullYear();
+---
+
+<section class="newsletter">
+  <div class="wrap newsletter-inner">
+    <div>
+      <span class="eyebrow eyebrow-gold">The Edens List</span>
+      <h2>First word on rare arrivals.</h2>
+      <p>The rarest pieces sell before they're listed. Join for private previews, market notes and invitations to salon evenings.</p>
+    </div>
+    <form class="newsletter-form" id="newsletterForm">
+      <label class="sr-only" for="newsletterEmail">Email address</label>
+      <input id="newsletterEmail" type="email" name="email" placeholder="Your email address" required autocomplete="email" />
+      <button class="btn btn-gold" type="submit">Join the list</button>
+      <p class="newsletter-note" id="newsletterNote">No spam. One email a fortnight at most.</p>
+    </form>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <a class="logo logo-light" href="/"><span class="logo-mark" aria-hidden="true">E</span><span class="logo-word">Edens <em>Watches</em></span></a>
+      <p>Authenticated new and pre-owned luxury watches, from our Nairobi salon to your wrist.</p>
+      <address>
+        {site.address}<br />
+        <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a><br />
+        <a href={`mailto:${site.email}`}>{site.email}</a>
+      </address>
+    </div>
+    <div>
+      <h3>Shop</h3>
+      <ul>
+        <li><a href="/shop">All watches</a></li>
+        <li><a href="/shop/men">Men's watches</a></li>
+        <li><a href="/shop/women">Women's watches</a></li>
+        <li><a href="/shop/pre-owned">Pre-owned</a></li>
+        <li><a href="/shop/new-arrivals">New arrivals</a></li>
+        <li><a href="/exclusive">The Black Collection</a></li>
+      </ul>
+    </div>
+    <div>
+      <h3>Brands</h3>
+      <ul>
+        {brands.slice(0, 7).map((b) => <li><a href={`/shop?brand=${encodeURIComponent(b)}`}>{b}</a></li>)}
+      </ul>
+    </div>
+    <div>
+      <h3>Client care</h3>
+      <ul>
+        <li><a href="/contact">Contact & viewings</a></li>
+        <li><a href="/info/authenticity">Authenticity & warranty</a></li>
+        <li><a href="/info/shipping-returns">Delivery & returns</a></li>
+        <li><a href="/info/faq">FAQ</a></li>
+        <li><a href="/info/privacy">Privacy policy</a></li>
+        <li><a href="/info/terms">Terms of sale</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap footer-bottom">
+    <span>© {year} Edens Watches. All rights reserved. Brand names belong to their owners; Edens is an independent retailer.</span>
+    <span class="pay-marks" aria-label="Payment methods">
+      <span>M-PESA</span><span>VISA</span><span>Mastercard</span><span>Bank</span>
+    </span>
+  </div>
+</footer>
+
+<script>
+  const form = document.getElementById("newsletterForm") as HTMLFormElement | null;
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const note = document.getElementById("newsletterNote");
+    if (note) note.textContent = "You're on the list. Welcome to Edens.";
+    form.reset();
+  });
+</script>

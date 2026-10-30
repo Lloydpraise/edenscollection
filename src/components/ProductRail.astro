@@ -1,0 +1,34 @@
+---
+// A titled row of product cards. Cards are rendered to plain HTML (no island) for speed.
+import ProductCard from "./react/ProductCard.jsx";
+import { toCardProduct } from "../data/products.js";
+
+interface Props {
+  title: string;
+  eyebrow?: string;
+  products: any[];
+  link?: { href: string; label: string };
+  id?: string;
+  dark?: boolean;
+}
+const { title, eyebrow, products, link, id, dark = false } = Astro.props;
+---
+
+<section class:list={["section rail", dark && "section-dark"]} id={id}>
+  <div class="wrap">
+    <div class="section-head reveal">
+      <div>
+        {eyebrow && <span class="eyebrow">{eyebrow}</span>}
+        <h2>{title}</h2>
+      </div>
+      {link && <a class="text-link" href={link.href}>{link.label} →</a>}
+    </div>
+    <div class="rail-track">
+      {products.map((p, i) => (
+        <div class:list={["reveal", `d${i % 4}`]}>
+          <ProductCard product={toCardProduct(p)} dark={dark || p.exclusive} />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,24 @@
+---
+const items = [
+  { title: "Authenticity guaranteed", text: "Inspected by our watchmaker, certified in writing", icon: '<path d="M12 3 5 6v5.5c0 4.3 3 7.7 7 9.5 4-1.8 7-5.2 7-9.5V6l-7-3Z"/><path d="m9 12 2 2 4-4"/>' },
+  { title: "Insured delivery", text: "Same day in Nairobi, 1 – 2 days countrywide", icon: '<path d="M3 6h11v10H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="17.5" r="1.6"/><circle cx="17.5" cy="17.5" r="1.6"/>' },
+  { title: "Up to 5-year warranty", text: "On every new and pre-owned watch", icon: '<circle cx="12" cy="12" r="8"/><path d="M12 7.5V12l3 2"/>' },
+  { title: "Pay your way", text: "M-Pesa, card, bank or reserve with a deposit", icon: '<rect x="3" y="6" width="18" height="12" rx="2"/><path d="M3 10h18M7 15h3"/>' },
+];
+---
+
+<section class="trust" aria-label="Why buy from Edens">
+  <div class="wrap trust-grid">
+    {
+      items.map((item, i) => (
+        <div class:list={["trust-item reveal", `d${i}`]}>
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" set:html={item.icon} aria-hidden="true" />
+          <div>
+            <strong>{item.title}</strong>
+            <span>{item.text}</span>
+          </div>
+        </div>
+      ))
+    }
+  </div>
+</section>

@@ -1,0 +1,17 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import WishlistPage from "../islands/WishlistPage.jsx";
+---
+
+<Layout title="Wishlist">
+  <section class="page-hero page-hero-sm">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Wishlist" }]} />
+      <h1>Your wishlist</h1>
+    </div>
+  </section>
+  <section class="section section-tight">
+    <div class="wrap"><WishlistPage client:load /></div>
+  </section>
+</Layout>
