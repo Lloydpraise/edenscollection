@@ -10,10 +10,10 @@
 //   tags       bestseller | new  (drive the home page rails)
 //   department / subcategory  see categories.js (the sample watches below all sit under watches)
 //
-// Real stock arrives from the supplier's Telegram channel: sync/ writes it to supplier-products.json, and it is
-// listed after the samples here.
+// Real stock arrives from the supplier's Telegram channel: telegram-worker/ saves it in Supabase and
+// supplier.js reads it at build time. It is listed after the samples here.
 
-import supplierFeed from "./supplier-products.json";
+import { loadSupplierProducts } from "./supplier.js";
 import { departments, getDepartment } from "./categories.js";
 
 const NEW_FOR_DAYS = 21;
@@ -454,10 +454,10 @@ const sampleProducts = [
 ].map((p) => ({ department: "watches", subcategory: p.category === "women" ? "women" : "men", ...p }));
 
 // Supplier pieces have photos, so they skip the illustrations; recent ones get the "new" tag.
-const supplierProducts = supplierFeed.map((p) => ({
+const supplierProducts = (await loadSupplierProducts()).map((p) => ({
   ...p,
   art: null,
-  tags: [...new Set([...(p.tags || []), ...(Date.now() - Date.parse(p.addedAt) < NEW_FOR_DAYS * 864e5 ? ["new"] : [])])],
+  tags: p.stock > 0 && Date.now() - Date.parse(p.addedAt) < NEW_FOR_DAYS * 864e5 ? ["new"] : [],
 }));
 
 export const products = [...sampleProducts, ...supplierProducts];

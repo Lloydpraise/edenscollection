@@ -8,17 +8,19 @@ export default function ProductCard({ product, eager = false, dark, wished = fal
   const isDark = dark ?? product.exclusive;
   const off = percentOff(product.price, product.compareAt);
   const href = `/product/${product.slug}`;
+  const sold = product.stock <= 0;
   const payload = JSON.stringify(product);
   return (
-    <article className={`pcard${isDark ? " is-dark" : ""}`} data-product-id={product.id}>
+    <article className={`pcard${isDark ? " is-dark" : ""}${sold ? " is-sold" : ""}`} data-product-id={product.id}>
       <div className="pcard-media">
         <a href={href} className="pcard-img" aria-label={`${product.brand} ${product.name}`} tabIndex={-1}>
           <img src={product.image} alt={`${product.brand} ${product.name}`} loading={eager ? "eager" : "lazy"} decoding="async" width="600" height="750" />
         </a>
         <div className="pcard-badges">
+          {sold && <span className="badge badge-ink">Sold</span>}
           {product.exclusive && <span className="badge badge-gold">Black Collection</span>}
           {off > 0 && <span className="badge badge-royal">−{off}%</span>}
-          {!product.exclusive && product.tags?.includes("new") && <span className="badge badge-ink">New in</span>}
+          {!sold && !product.exclusive && product.tags?.includes("new") && <span className="badge badge-ink">New in</span>}
           {product.condition === "pre-owned" && <span className="badge badge-line">Pre-owned</span>}
         </div>
         <button className="pcard-wish" type="button" data-wish={payload} aria-pressed={wished ? "true" : "false"} aria-label={`Save ${product.name} to wishlist`}>
@@ -43,7 +45,7 @@ export default function ProductCard({ product, eager = false, dark, wished = fal
               <span className="price-note">Only one available</span>
             ) : null}
           </div>
-          <button className="pcard-add" type="button" data-add-to-cart={payload} aria-label={`Add ${product.brand} ${product.name} to bag`} title="Add to bag">
+          <button className="pcard-add" type="button" data-add-to-cart={payload} disabled={sold} aria-label={`Add ${product.brand} ${product.name} to bag`} title="Add to bag">
             <BagIcon width={19} height={19} />
           </button>
         </div>

@@ -67,7 +67,8 @@ export default function ShopBrowser({ products, brands, preset = {}, noun = ["wa
       if (saleOnly && !(p.compareAt > p.price)) return false;
       return true;
     });
-    return out.sort(SORTS[sort].fn);
+    // Sold pieces stay listed (they show what we can source) but always after what's available.
+    return out.sort((a, b) => (a.stock <= 0) - (b.stock <= 0) || SORTS[sort].fn(a, b));
   }, [products, q, sel, saleOnly, sort]);
 
   const active = [

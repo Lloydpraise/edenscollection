@@ -104,8 +104,10 @@ function guess(text, options) {
   return "";
 }
 
-export function parseCaption(caption = "") {
-  const text = caption.replace(/\r/g, "");
+// soldPattern (optional) strips "SOLD" marks so they don't end up in the name or description.
+export function parseCaption(caption = "", { soldPattern } = {}) {
+  let text = caption.replace(/\r/g, "");
+  if (soldPattern) text = text.replace(new RegExp(soldPattern.source, "giu"), "$1").replace(/[ \t]+/g, " ");
   const priceHit = parsePrice(text);
   const brand = findBrand(text);
 

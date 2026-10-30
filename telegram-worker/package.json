@@ -1,0 +1,22 @@
+{
+  "name": "edens-telegram-worker",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Imports the supplier Telegram channel into the VVStudios products table for Edens",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "login": "node --env-file=.env login.js",
+    "backfill": "node --env-file=.env sync.js --backfill --runner=laptop",
+    "sync": "node --env-file=.env sync.js",
+    "dry": "node --env-file=.env sync.js --dry-run",
+    "watch": "node --env-file=.env sync.js --watch",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.118.0",
+    "telegram": "^2.26.22"
+  }
+}
