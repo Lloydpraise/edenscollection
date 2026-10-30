@@ -9,7 +9,10 @@ export function classify({ title = "", text = "", brand = "" }) {
   const department =
     departments.find((d) => d.slug !== "more" && d.match.test(title)) ||
     (WATCH_BRANDS.includes(brand) ? departments.find((d) => d.slug === "watches") : null) ||
-    departments.find((d) => d.match.test(text));
-  const sub = department.subcategories.find((s) => s.match.test(`${title}\n${text}`));
+    departments.find((d) => d.match.test(text)) ||
+    departments.find((d) => d.slug === "more"); // a post with no caption at all matches nothing, not even /./
+  const sub =
+    department.subcategories.find((s) => s.match.test(`${title}\n${text}`)) ||
+    department.subcategories[department.subcategories.length - 1];
   return { department: department.slug, subcategory: sub.slug };
 }

@@ -106,3 +106,10 @@ test("recognises sold marks", () => {
   for (const t of ["SOLD", "Sold ✅", "sold out!!", "Imeuzwa"]) assert.ok(isSoldMark(t, sold), t);
   for (const t of ["Rolex sold separately", "resold", "Price 4500"]) assert.ok(!isSoldMark(t, sold), t);
 });
+
+test("a post with no caption is filed under more/other instead of crashing", () => {
+  assert.deepEqual(classify({ title: "", text: "", brand: "" }), { department: "more", subcategory: "other" });
+  const row = buildRow(state(""), { businessId: "b", markup: 2000, soldPattern: sold });
+  assert.equal(row.category, "more");
+  assert.equal(row.price, null);
+});
