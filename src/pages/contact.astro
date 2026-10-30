@@ -1,0 +1,59 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { site } from "../data/site.js";
+const msg = encodeURIComponent("Hello Edens Watches, I'd like to book a viewing.");
+---
+
+<Layout title="Contact & viewings" description="Visit the Edens Watches salon on Limuru Road, Nairobi, or talk to our concierge on WhatsApp.">
+  <section class="page-hero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
+      <h1>Contact & viewings</h1>
+      <p>Talk to a watch specialist, book a private viewing, or ask us to source a reference.</p>
+    </div>
+  </section>
+  <section class="section section-tight">
+    <div class="wrap contact-grid">
+      <div class="contact-cards">
+        <a class="contact-card contact-card-royal" href={`https://wa.me/${site.whatsapp}?text=${msg}`} target="_blank" rel="noopener">
+          <span class="eyebrow">Fastest</span><strong>WhatsApp the concierge</strong><span>{site.phone}</span>
+        </a>
+        <a class="contact-card" href={`tel:${site.phone.replace(/\s/g, "")}`}><span class="eyebrow">Call</span><strong>{site.phone}</strong><span>{site.hours}</span></a>
+        <a class="contact-card" href={`mailto:${site.email}`}><span class="eyebrow">Email</span><strong>{site.email}</strong><span>Replies within one business day</span></a>
+        <div class="contact-card"><span class="eyebrow">Salon</span><strong>{site.address}</strong><span>{site.hours} · viewings by appointment</span></div>
+      </div>
+      <form class="contact-form" id="contactForm">
+        <h2>Send an enquiry</h2>
+        <div class="field-grid">
+          <label class="field"><span>Name</span><input name="name" required autocomplete="name" /></label>
+          <label class="field"><span>Phone</span><input name="phone" type="tel" required autocomplete="tel" /></label>
+          <label class="field field-full"><span>Email</span><input name="email" type="email" autocomplete="email" /></label>
+          <label class="field field-full">
+            <span>I'm interested in</span>
+            <select name="topic">
+              <option>Buying a watch</option>
+              <option>Booking a viewing</option>
+              <option>Sourcing a specific reference</option>
+              <option>Selling or part-exchanging</option>
+              <option>Servicing & warranty</option>
+            </select>
+          </label>
+          <label class="field field-full"><span>Message</span><textarea name="message" rows="5"></textarea></label>
+        </div>
+        <button class="btn btn-royal btn-lg" type="submit">Send enquiry</button>
+        <p class="fine" id="contactNote" role="status"></p>
+      </form>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const form = document.getElementById("contactForm") as HTMLFormElement | null;
+  form?.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const note = document.getElementById("contactNote");
+    if (note) note.textContent = "Thank you. A specialist will be in touch within one business day.";
+    form.reset();
+  });
+</script>

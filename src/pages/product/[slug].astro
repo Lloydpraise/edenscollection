@@ -1,0 +1,147 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import ProductRail from "../../components/ProductRail.astro";
+import Reviews from "../../components/Reviews.astro";
+import ProductGallery from "../../islands/ProductGallery.jsx";
+import BuyBox from "../../islands/BuyBox.jsx";
+import { products, galleryImages, relatedProducts, toCardProduct, coverImage } from "../../data/products.js";
+import { ratingSummary } from "../../data/reviews.js";
+import { productFaqs } from "../../data/faqs.js";
+import { site } from "../../data/site.js";
+import { formatKsh, percentOff } from "../../lib/format.js";
+
+export function getStaticPaths() {
+  return products.map((product) => ({ params: { slug: product.slug }, props: { product } }));
+}
+
+const { product } = Astro.props;
+const dark = product.exclusive;
+const off = percentOff(product.price, product.compareAt);
+const { average, count } = ratingSummary(product.id);
+const related = relatedProducts(product);
+const categoryCrumb =
+  product.exclusive
+    ? { label: "Black Collection", href: "/exclusive" }
+    : product.condition === "pre-owned"
+      ? { label: "Pre-owned", href: "/shop/pre-owned" }
+      : product.category === "women"
+        ? { label: "Women", href: "/shop/women" }
+        : { label: "Men", href: "/shop/men" };
+
+const specs = [
+  ["Brand", product.brand],
+  ["Model", product.name],
+  ["Reference", product.reference],
+  ["Year", product.year],
+  ["Condition", product.condition === "new" ? "New / unworn" : "Pre-owned, certified"],
+  ["Movement", product.movement],
+  ["Case size", product.caseSize],
+  ["Case material", product.caseMaterial],
+  ["Dial", product.dialColour],
+  ["Strap / bracelet", product.strap],
+  ["Water resistance", product.waterResistance],
+  ["Box & papers", product.boxPapers],
+];
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: `${product.brand} ${product.name}`,
+  sku: product.reference,
+  brand: { "@type": "Brand", name: product.brand },
+  description: product.description,
+  image: new URL(coverImage(product), Astro.site).href,
+  offers: {
+    "@type": "Offer",
+    priceCurrency: "KES",
+    price: product.price,
+    availability: product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+    itemCondition: product.condition === "new" ? "https://schema.org/NewCondition" : "https://schema.org/UsedCondition",
+  },
+  ...(count ? { aggregateRating: { "@type": "AggregateRating", ratingValue: average.toFixed(1), reviewCount: count } } : {}),
+};
+---
+
+<Layout title={`${product.brand} ${product.name} ${product.reference}`} description={product.description} dark={dark} image={coverImage(product)}>
+  <script type="application/ld+json" slot="head" set:html={JSON.stringify(jsonLd)} />
+
+  <section class:list={["product-shell", dark && "section-dark"]}>
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Shop", href: "/shop" }, categoryCrumb, { label: product.name }]} />
+      <div class="product-grid-main">
+        <ProductGallery client:visible images={galleryImages(product)} alt={`${product.brand} ${product.name}`} dark={dark} />
+
+        <div class="product-panel">
+          <div class="product-tags">
+            {product.exclusive && <span class="badge badge-gold">Black Collection</span>}
+            <span class="badge badge-line">{product.condition === "new" ? "New / unworn" : "Certified pre-owned"}</span>
+            {off > 0 && <span class="badge badge-royal">−{off}%</span>}
+          </div>
+          <a class="product-brand" href={`/shop?brand=${encodeURIComponent(product.brand)}`}>{product.brand}</a>
+          <h1>{product.name}</h1>
+          <p class="product-ref">Ref. {product.reference} · {product.caseSize} · {product.caseMaterial}</p>
+          {
+            count > 0 && (
+              <a class="product-rating" href="#reviews">
+                <span class="stars stars-sm" style={`--rating:${average}`} aria-hidden="true" />
+                {average.toFixed(1)} · {count} {count === 1 ? "review" : "reviews"}
+              </a>
+            )
+          }
+
+          <div class="price-block">
+            {off > 0 && <span class="price-strike">{formatKsh(product.compareAt)}</span>}
+            <span class="price-now price-xl">{formatKsh(product.price)}</span>
+            {off > 0 && <span class="price-save">You save {formatKsh(product.compareAt - product.price)}</span>}
+            <span class="price-hint">Or reserve with a 30% deposit of {formatKsh(product.price * 0.3)}</span>
+          </div>
+
+          <ul class="highlights">
+            {product.highlights.map((h) => <li>{h}</li>)}
+          </ul>
+
+          <BuyBox client:load product={toCardProduct(product)} whatsapp={site.whatsapp} dark={dark} />
+
+          <ul class="assurance-list">
+            <li><strong>Authenticity guaranteed.</strong> Signed Edens certificate in the box.</li>
+            <li><strong>Insured delivery.</strong> Same day in Nairobi, 1 – 2 days countrywide.</li>
+            <li><strong>{product.condition === "new" ? "Manufacturer warranty." : "2-year Edens warranty."}</strong> Extendable to 5 years.</li>
+            <li><strong>14-day returns</strong> on unworn watches with full set.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section product-details">
+    <div class="wrap details-grid">
+      <div>
+        <span class="eyebrow">About this watch</span>
+        <h2>The details</h2>
+        <p class="lead">{product.description}</p>
+        <table class="spec-table">
+          <tbody>
+            {specs.map(([k, v]) => <tr><th scope="row">{k}</th><td>{v}</td></tr>)}
+          </tbody>
+        </table>
+      </div>
+      <aside class="faq">
+        <span class="eyebrow">Good to know</span>
+        <h2>Questions</h2>
+        {
+          productFaqs.map((f, i) => (
+            <details open={i === 0}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))
+        }
+      </aside>
+    </div>
+  </section>
+
+  <Reviews product={product} />
+
+  <ProductRail title="You may also like" eyebrow="Considered pairings" products={related} link={{ href: "/shop", label: "Shop all" }} />
+</Layout>

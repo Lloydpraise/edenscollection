@@ -1,0 +1,10 @@
+---
+import { announcements } from "../data/site.js";
+const loop = [...announcements, ...announcements];
+---
+
+<div class="ticker" aria-label="Store announcements">
+  <div class="ticker-track">
+    {loop.map((text, i) => <span aria-hidden={i >= announcements.length ? "true" : undefined}>{text}</span>)}
+  </div>
+</div>

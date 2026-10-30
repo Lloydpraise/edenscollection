@@ -1,0 +1,33 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
+import { infoPages } from "../../data/info.js";
+import { site } from "../../data/site.js";
+
+export function getStaticPaths() {
+  return infoPages.map((page) => ({ params: { slug: page.slug }, props: { page } }));
+}
+const { page } = Astro.props;
+---
+
+<Layout title={page.title} description={page.intro}>
+  <section class="page-hero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Client care", href: "/contact" }, { label: page.title }]} />
+      <h1>{page.title}</h1>
+      <p>{page.intro}</p>
+    </div>
+  </section>
+  <section class="section section-tight">
+    <div class="wrap info-layout">
+      <nav class="info-nav" aria-label="Client care">
+        {infoPages.map((p) => <a href={`/info/${p.slug}`} class:list={[p.slug === page.slug && "active"]}>{p.title}</a>)}
+        <a href="/contact">Contact & viewings</a>
+      </nav>
+      <article class="prose">
+        {page.sections.map((s) => (<><h2>{s.h}</h2><p>{s.p}</p></>))}
+        <p class="muted">Questions? Call <a href={`tel:${site.phone.replace(/\s/g, "")}`}>{site.phone}</a> or email <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
+      </article>
+    </div>
+  </section>
+</Layout>

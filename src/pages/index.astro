@@ -1,0 +1,157 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TrustBar from "../components/TrustBar.astro";
+import ProductRail from "../components/ProductRail.astro";
+import ProductCard from "../components/react/ProductCard.jsx";
+import { products, brands, toCardProduct, getProduct } from "../data/products.js";
+import { testimonials } from "../data/reviews.js";
+import { formatKsh } from "../lib/format.js";
+
+const bestsellers = products.filter((p) => p.tags.includes("bestseller") && !p.exclusive).slice(0, 4);
+const newIn = products.filter((p) => p.tags.includes("new") && !p.exclusive).slice(0, 4);
+const exclusives = products.filter((p) => p.exclusive).slice(0, 3);
+const hero = getProduct("rolex-day-date-40-yellow-gold")!;
+
+const tiles = [
+  { href: "/shop/men", label: "For him", title: "Men's watches", img: "/watches/rolex-submariner-date-126610lv-front.svg" },
+  { href: "/shop/women", label: "For her", title: "Women's watches", img: "/watches/cartier-ballon-bleu-33-rose-gold-front.svg" },
+  { href: "/shop/pre-owned", label: "Certified", title: "Pre-owned", img: "/watches/rolex-lady-datejust-28-front.svg" },
+  { href: "/shop/sale", label: "Limited time", title: "Seasonal offers", img: "/watches/omega-seamaster-diver-300m-front.svg" },
+];
+
+const standard = [
+  { n: "01", title: "Sourced with care", text: "From authorised dealers and trusted private collections, with a provenance we can trace." },
+  { n: "02", title: "Authenticated in-house", text: "Our watchmaker opens, inspects and times every piece. You receive a signed Edens certificate." },
+  { n: "03", title: "Delivered by hand", text: "Insured, signed-for delivery across Kenya, or a private viewing in our Limuru Road salon." },
+];
+---
+
+<Layout>
+  <section class="hero">
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <span class="eyebrow eyebrow-gold">Luxury & rare timepieces · Nairobi</span>
+        <h1>Time, kept <em>beautifully.</em></h1>
+        <p class="hero-sub">
+          New and pre-owned watches from the world's great maisons, authenticated by our watchmaker and delivered insured to your door.
+        </p>
+        <div class="hero-ctas">
+          <a class="btn btn-gold btn-lg" href="/shop">Shop the collection</a>
+          <a class="btn btn-outline-light btn-lg" href="/exclusive">The Black Collection</a>
+        </div>
+        <ul class="hero-stats">
+          <li><strong>{products.length}</strong><span>pieces in the salon</span></li>
+          <li><strong>{brands.length}</strong><span>maisons</span></li>
+          <li><strong>5 yr</strong><span>warranty</span></li>
+        </ul>
+      </div>
+      <div class="hero-visual">
+        <img src={`/watches/${hero.slug}-salon.svg`} alt={`${hero.brand} ${hero.name}`} width="600" height="750" fetchpriority="high" />
+        <a class="hero-tag" href={`/product/${hero.slug}`}>
+          <span class="eyebrow">Just arrived</span>
+          <strong>{hero.brand} {hero.name}</strong>
+          <span>{formatKsh(hero.price)}</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <TrustBar />
+
+  <section class="brand-strip" aria-label="Brands">
+    <div class="wrap brand-strip-row">
+      {brands.map((b) => <a href={`/shop?brand=${encodeURIComponent(b)}`}>{b}</a>)}
+    </div>
+  </section>
+
+  <ProductRail id="bestsellers" eyebrow="Most wanted" title="Best sellers" products={bestsellers} link={{ href: "/shop", label: "Shop all" }} />
+
+  <section class="section tiles-section">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Find yours</span>
+          <h2>Shop by collection</h2>
+        </div>
+      </div>
+      <div class="tiles">
+        {
+          tiles.map((t, i) => (
+            <a class:list={["tile reveal", `d${i}`]} href={t.href}>
+              <img src={t.img} alt="" loading="lazy" />
+              <span class="tile-text">
+                <span class="eyebrow">{t.label}</span>
+                <strong>{t.title}</strong>
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark black-band">
+    <div class="wrap">
+      <div class="black-band-head reveal">
+        <span class="eyebrow eyebrow-gold">By appointment only</span>
+        <h2>The Black Collection</h2>
+        <p>Our rarest pieces: discontinued references, allocation-only models and collector-grade pre-owned. Shown privately, delivered by hand.</p>
+        <a class="btn btn-gold" href="/exclusive">View the collection</a>
+      </div>
+      <div class="product-grid product-grid-3">
+        {exclusives.map((p, i) => (
+          <div class:list={["reveal", `d${i}`]}><ProductCard product={toCardProduct(p)} dark /></div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <ProductRail id="new-in" eyebrow="Fresh to the salon" title="New arrivals" products={newIn} link={{ href: "/shop/new-arrivals", label: "See all new" }} />
+
+  <section class="section standard">
+    <div class="wrap standard-grid">
+      <div class="standard-intro reveal">
+        <span class="eyebrow">The Edens standard</span>
+        <h2>More than a watch. A promise kept.</h2>
+        <p>Buying a fine watch in Kenya should feel as considered as the watch itself. That's why every piece passes through the same three hands before it reaches yours.</p>
+        <a class="text-link" href="/info/authenticity">How we authenticate →</a>
+      </div>
+      <ol class="standard-steps">
+        {
+          standard.map((s, i) => (
+            <li class:list={["reveal", `d${i}`]}>
+              <span class="step-n">{s.n}</span>
+              <div>
+                <h3>{s.title}</h3>
+                <p>{s.text}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <section class="section testimonials">
+    <div class="wrap">
+      <div class="section-head section-head-center reveal">
+        <div>
+          <span class="eyebrow">Our clients</span>
+          <h2>Worn, loved, recommended</h2>
+        </div>
+      </div>
+      <div class="testimonial-grid">
+        {
+          testimonials.map((t, i) => (
+            <figure class:list={["testimonial reveal", `d${i}`]}>
+              <span class="stars" style="--rating:5" aria-label="5 out of 5 stars" />
+              <blockquote>“{t.body}”</blockquote>
+              <figcaption><strong>{t.name}</strong><span>{t.place}</span></figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>

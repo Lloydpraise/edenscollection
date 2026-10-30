@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import CheckoutForm from "../islands/CheckoutForm.jsx";
+import { deliveryOptions, paymentOptions, site } from "../data/site.js";
+---
+
+<Layout title="Checkout">
+  <section class="page-hero page-hero-sm">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Bag", href: "/cart" }, { label: "Checkout" }]} />
+      <h1>Checkout</h1>
+    </div>
+  </section>
+  <section class="section section-tight">
+    <div class="wrap">
+      <CheckoutForm client:load deliveryOptions={deliveryOptions} paymentOptions={paymentOptions} whatsapp={site.whatsapp} />
+    </div>
+  </section>
+</Layout>

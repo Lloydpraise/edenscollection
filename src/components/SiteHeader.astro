@@ -1,0 +1,86 @@
+---
+import HeaderActions from "../islands/HeaderActions.jsx";
+import SearchBox from "../islands/SearchBox.jsx";
+import { products, brands, toCardProduct } from "../data/products.js";
+
+interface Props {
+  dark?: boolean;
+}
+const { dark = false } = Astro.props;
+const path = Astro.url.pathname;
+const searchList = products.map((p) => ({ ...toCardProduct(p), caseMaterial: p.caseMaterial }));
+
+const links = [
+  { href: "/shop", label: "Shop all" },
+  { href: "/shop/men", label: "Men" },
+  { href: "/shop/women", label: "Women" },
+  { href: "/shop/pre-owned", label: "Pre-owned" },
+  { href: "/exclusive", label: "Black Collection", exclusive: true },
+];
+const isActive = (href: string) => (href === "/shop" ? path === "/shop" || path === "/shop/" : path.startsWith(href));
+---
+
+<header id="siteHeader" class:list={[dark && "header-dark"]}>
+  <div class="wrap nav-row">
+    <button class="icon-btn burger" id="burgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <svg width="20" height="14" viewBox="0 0 20 14" aria-hidden="true"><path d="M0 1h20M0 7h20M0 13h13" stroke="currentColor" stroke-width="1.4"></path></svg>
+    </button>
+
+    <a class="logo" href="/" aria-label="Edens Watches home">
+      <span class="logo-mark" aria-hidden="true">E</span>
+      <span class="logo-word">Edens <em>Watches</em></span>
+    </a>
+
+    <nav class="links" aria-label="Main">
+      {links.slice(0, 4).map((l) => <a href={l.href} class:list={[isActive(l.href) && "active"]}>{l.label}</a>)}
+      <div class="nav-brands">
+        <a href="/shop" class="nav-brands-trigger" aria-haspopup="true">Brands <span class="caret" aria-hidden="true">▾</span></a>
+        <div class="brand-menu">
+          <div class="wrap brand-menu-grid">
+            <div>
+              <span class="eyebrow">Maisons we carry</span>
+              <ul>
+                {brands.map((b) => <li><a href={`/shop?brand=${encodeURIComponent(b)}`}>{b}</a></li>)}
+              </ul>
+            </div>
+            <a class="brand-menu-feature" href="/exclusive">
+              <img src={`/watches/${products.find((p) => p.exclusive)!.slug}-salon.svg`} alt="" loading="lazy" />
+              <span>
+                <span class="eyebrow">By appointment</span>
+                <strong>The Black Collection</strong>
+                <span class="text-link">Discover →</span>
+              </span>
+            </a>
+          </div>
+        </div>
+      </div>
+      <a href="/exclusive" class:list={["nav-exclusive", isActive("/exclusive") && "active"]}>Black Collection</a>
+    </nav>
+
+    <div class="header-actions">
+      <SearchBox client:idle products={searchList} />
+      <HeaderActions client:load />
+    </div>
+  </div>
+
+  <div class="mobile-menu" id="mobileMenu" hidden>
+    <nav class="wrap" aria-label="Mobile">
+      {links.map((l) => <a href={l.href} class:list={[l.exclusive && "nav-exclusive"]}>{l.label}</a>)}
+      <a href="/shop/new-arrivals">New arrivals</a>
+      <a href="/shop/sale">Sale</a>
+      <a href="/wishlist">Wishlist</a>
+      <a href="/contact">Contact & viewings</a>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById("burgerBtn");
+  const menu = document.getElementById("mobileMenu");
+  btn?.addEventListener("click", () => {
+    const open = menu?.hasAttribute("hidden");
+    if (open) menu?.removeAttribute("hidden");
+    else menu?.setAttribute("hidden", "");
+    btn.setAttribute("aria-expanded", String(open));
+  });
+</script>

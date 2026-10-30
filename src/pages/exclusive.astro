@@ -1,0 +1,38 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProductCard from "../components/react/ProductCard.jsx";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
+import { products, toCardProduct } from "../data/products.js";
+import { site } from "../data/site.js";
+
+const list = products.filter((p) => p.exclusive);
+const msg = encodeURIComponent("Hello Edens Watches, I'd like to book a private viewing of The Black Collection.");
+---
+
+<Layout title="The Black Collection" description="Rare, discontinued and allocation-only watches, shown privately in Nairobi." dark>
+  <section class="black-hero">
+    <div class="wrap">
+      <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "The Black Collection" }]} />
+      <span class="eyebrow eyebrow-gold">By appointment only</span>
+      <h1>The Black <em>Collection</em></h1>
+      <p>Discontinued references, allocation-only models and collector-grade pre-owned pieces. Each one is shown privately at our salon or brought to you, and delivered by hand.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-gold btn-lg" href={`https://wa.me/${site.whatsapp}?text=${msg}`} target="_blank" rel="noopener">Book a private viewing</a>
+        <a class="btn btn-outline-light btn-lg" href="#pieces">See the pieces</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark" id="pieces">
+    <div class="wrap">
+      <div class="product-grid product-grid-4">
+        {list.map((p, i) => <div class:list={["reveal", `d${i % 4}`]}><ProductCard product={toCardProduct(p)} dark eager={i < 4} /></div>)}
+      </div>
+      <div class="black-perks">
+        <div><strong>Private viewings</strong><span>At 14 Limuru Road or your home or office in Nairobi.</span></div>
+        <div><strong>Sourcing service</strong><span>Looking for a specific reference? We'll find it through our network.</span></div>
+        <div><strong>Part-exchange</strong><span>Trade a watch from your collection towards your next piece.</span></div>
+      </div>
+    </div>
+  </section>
+</Layout>
